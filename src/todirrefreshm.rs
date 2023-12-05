@@ -1,12 +1,11 @@
-extern crate exif;
 extern crate chrono;
 use std::fs;
 use chrono::prelude::*;
 use chrono::offset::LocalResult;
 
-pub fn todirrefreshm(new_dir:String) -> (i32, String, Vec<String>) { 
+pub fn todirrefreshm(new_dir:String) -> (u32, String, Vec<String>) { 
      let errstring: String;
-     let mut errcode = 0;
+     let mut errcode: u32 = 0;
      let mut numentry = 0;
      let mut baddate1 = 0;
      let mut dateyr = 0;
@@ -36,7 +35,7 @@ pub fn todirrefreshm(new_dir:String) -> (i32, String, Vec<String>) {
                                       let date1ar2: Vec<&str> = file_name[0..23].split("_").collect();
                                       let lendat2 = date1ar2.len();
                                       for indl in 0..lendat2 {
-                                           let date_int: i32 = date1ar2[indl].clone().parse().unwrap_or(-9999);
+                                           let date_int: i32 = date1ar2[indl].parse().unwrap_or(-9999);
                                            if date_int == -9999 {
                                                baddate1 = 1;
                                            } else {

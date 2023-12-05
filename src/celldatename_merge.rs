@@ -1,7 +1,7 @@
 extern crate chrono;
 use chrono::offset::LocalResult;
 use chrono::prelude::*;
-use chrono::{Utc};
+use chrono::Utc;
 // gen: datenumother, mbeforebox, datenumto--, bolusenum--, dateto--, dateother
 
 // function called by build_ui
@@ -40,21 +40,21 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
         if lendat2 < 2 {
             baddate1 = 1;
         } else {
-            yyyymmddx = date1ar2[0].clone().parse().unwrap();
+            yyyymmddx = date1ar2[0].parse().unwrap();
             if yyyymmddx.len() != 8 {
 //            if date1ar2(0).clone().parse().unwrap().len() != 8 {
                 if lendat2 < 3 {
                     baddate1 = 1;
                 } else {
-                    yyyymmddx = date1ar2[1].clone().parse().unwrap();
+                    yyyymmddx = date1ar2[1].parse().unwrap();
                     if yyyymmddx.len() != 8 {
                         baddate1 = 1;
                     } else {
-                        hhmmssx = date1ar2[2].clone().parse().unwrap();
+                        hhmmssx = date1ar2[2].parse().unwrap();
                     }
                 }
             } else {
-                hhmmssx = date1ar2[1].clone().parse().unwrap();
+                hhmmssx = date1ar2[1].parse().unwrap();
             }
         }
     }
@@ -111,7 +111,7 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
         }
     }
     if baddate1 != 0 {
-        errstring = "<span color=\"#FF000000\">********* Merge: selected file name is does not have a valid date in name **********</span>".to_string();
+        errstring = "selected file name is does not have a valid date in name".to_string();
         errcode = 1;
     } else {
         datefile = Utc.with_ymd_and_hms(dateyr, datemo, dateday, datehr as u32, datemin as u32, datesec as u32);
@@ -120,7 +120,7 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
             if mbeforebox_check {
                 if dateto == datefile {
                     if datenumto < 1 {
-                        errstring = "<span color=\"#FF000000\">********* Merge: selected file number is zero can not insert **********</span>".to_string();
+                        errstring = "selected file number is zero can not insert".to_string();
                         errcode = 2;
                     } else {
                         if datenumto == 1 {
@@ -132,7 +132,7 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
                 } else {
                     let duration = dateto.unwrap().signed_duration_since(datefile.unwrap());
                     if duration.num_seconds() < 0 {
-                        errstring = "<span color=\"#FF000000\">********* Merge: selected file date not less than place of insertion **********</span>".to_string();
+                        errstring = "selected file date not less than place of insertion".to_string();
                         errcode = 3;
                     } else {
                         datenum = 500;
@@ -141,7 +141,7 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
             } else {
                 if dateto == datefile {
                     if datenumto > 998 {
-                        errstring = "<span color=\"#FF000000\">********* Merge: selected file number is 999 can not insert **********</span>".to_string();
+                        errstring = "selected file number is 999 can not insert".to_string();
                         errcode = 4;
                     } else {
                         datenum = datenumto + ((1000 - datenumto)/2);
@@ -149,7 +149,7 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
                 } else {
                     let duration = datefile.unwrap().signed_duration_since(dateto.unwrap());
                     if duration.num_seconds() < 0 {
-                        errstring = "<span color=\"#FF000000\">********* Merge: selected file date not greater than place of insertion **********</span>".to_string();
+                        errstring = "selected file date not greater than place of insertion".to_string();
                         errcode = 5;
                     } else {
                         datenum = 500;
@@ -160,19 +160,19 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
         } else {
             if dateto == dateother {
                 if datefile != dateto {
-                    errstring = "<span color=\"#FF000000\">********* Merge: selected file date will not go into place of insertion 6 **********</span>".to_string();
+                    errstring = "selected file date will not go into place of insertion 6".to_string();
                     errcode = 6;
                 } else {
                     if mbeforebox_check {
                         if (datenumto - datenumother) < 2 {
-                            errstring = "<span color=\"#FF000000\">********* Merge: before checked and selected file number and previous file number less than 2 apart **********</span>".to_string();
+                            errstring = "before checked and selected file number and previous file number less than 2 apart".to_string();
                             errcode = 7;
                         } else {
                             datenum = datenumto - ((datenumto - datenumother)/2);
                         }
                     } else {
                         if (datenumother - datenumto) < 2 {
-                            errstring = "<span color=\"#FF000000\">********* Merge: selected file number and next file number less than 2 apart **********</span>".to_string();
+                            errstring = "selected file number and next file number less than 2 apart".to_string();
                             errcode = 8;
                         } else {
                             datenum = datenumto + ((datenumother - datenumto)/2);
@@ -183,7 +183,7 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
                 if mbeforebox_check {
                     if dateother == datefile {
                         if datenumother > 998 {
-                            errstring = "<span color=\"#FF000000\">********* Merge: selected before file number is 999 can not insert **********</span>".to_string();
+                            errstring = "selected before file number is 999 can not insert".to_string();
                             errcode = 9;
                         } else {
                             datenum = datenumother + ((1000 - datenumother)/2);
@@ -191,12 +191,12 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
                     } else {
                         let duration = datefile.unwrap().signed_duration_since(dateother.unwrap());
                         if duration.num_seconds() < 0 {
-                            errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 10 **********</span>".to_string();
+                            errstring = "selected file date number will not go into place of insertion 10".to_string();
                             errcode = 10;
                         } else {
                             if dateto == datefile {
                                 if datenumto < 1 {
-                                    errstring = "<span color=\"#FF000000\">********* Merge: selected file number is zero can not insert **********</span>".to_string();
+                                    errstring = "selected file number is zero can not insert".to_string();
                                     errcode = 11;
                                 } else {
                                     if datenumto == 1 {
@@ -208,7 +208,7 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
                             } else {
                                 let duration = dateto.unwrap().signed_duration_since(datefile.unwrap());
                                 if duration.num_seconds() < 0 {
-                                    errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 10 **********</span>".to_string();
+                                    errstring = "selected file date number will not go into place of insertion 10".to_string();
                                     errcode = 12;
                                 } else {
                                     datenum = 500;
@@ -219,7 +219,7 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
                 } else {
                     if dateto == datefile {
                         if datenumto > 998 {
-                            errstring = "<span color=\"#FF000000\">********* Merge: selected before file number is 999 can not insert **********</span>".to_string();
+                            errstring = "selected before file number is 999 can not insert".to_string();
                             errcode = 13;
                         } else {
                             datenum = datenumto + ((1000 - datenumto)/2);
@@ -227,12 +227,12 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
                     } else {
                         let duration = datefile.unwrap().signed_duration_since(dateto.unwrap());
                         if duration.num_seconds() < 0 {
-                            errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 14 **********</span>".to_string();
+                            errstring = "selected file date number will not go into place of insertion 14".to_string();
                             errcode = 14;
                         } else {
                             if dateother == datefile {
                                 if datenumother < 1 {
-                                    errstring = "<span color=\"#FF000000\">********* Merge: selected file number is zero can not insert **********</span>".to_string();
+                                    errstring = "selected file number is zero can not insert".to_string();
                                     errcode = 15;
                                 } else {
                                     if datenumother == 1 {
@@ -244,7 +244,7 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
                             } else {
                                 let duration = dateother.unwrap().signed_duration_since(datefile.unwrap());
                                 if duration.num_seconds() < 0 {
-                                    errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 16 **********</span>".to_string();
+                                    errstring = "selected file date number will not go into place of insertion 16".to_string();
                                     errcode = 16;
                                 } else {
                                     datenum = 500;

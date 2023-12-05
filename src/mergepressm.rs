@@ -2,7 +2,7 @@ extern crate chrono;
 extern crate regex;
 
 use std::process::Command;
-use std::path::{Path};
+use std::path::Path;
 use std::fs;
 use regex::Regex;
 use chrono::{Utc, DateTime};
@@ -23,7 +23,6 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
         let mut fromdisplaydate = format!(" ");
         let str_cur_dirto: String;
         let mut tofilename = format!(" ");
-//        let mut filenamestr = format!(" ");
         let mut filenameother = format!(" ");
         let mut prefixstr = format!(" ");
         let mut dateto: LocalResult<DateTime<Utc>> = chrono::LocalResult::Single(Utc.with_ymd_and_hms(2000,1,1,1,1,1).unwrap());
@@ -60,13 +59,11 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
 // check a from file has been selected and that there is only one selection
         if bolok {
             let lineparse: Vec<&str> = fromstr[0..].split(" | ").collect();
-            fromfilename = lineparse[0].clone().to_string();
-            let fromdisplaydatea = lineparse[1].clone().to_string();
+            fromfilename = lineparse[0].to_string();
+            let fromdisplaydatea = lineparse[1].to_string();
             fromdisplaydate = fromdisplaydatea[3..].to_string();
                 println!("fromfilename: -{}-", fromfilename);
                 println!("fromdisplayname: -{}-", fromdisplaydate);
-//                let msgstr = format!("{} is the row name selected in From directory", fromfilename);
-//                messageval_label.set_text(&msgstr);
             let fullfrom = str_cur_dirfrom.clone() + "/" + &fromfilename.clone();
             if !Path::new(&fullfrom).exists() {
                 errstring = format!("*********  ERROR from file {} does not exist **********",fullfrom);
@@ -165,13 +162,11 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
                                      namec = namea;
                                      namea = " ";
                                      noa = true;
-//                                     println!("333 tofilename: {}  namea: {}", tofilename, namea);
                                  }
                              }
                         }
                         if found == 0 {
                             if tofilenamex == namec {
-//                                println!("222 tofilename: {}  namec: {}", tofilename, namec);
                                 found = 1;
                             }
                         }
@@ -207,7 +202,7 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
             let lendat2 = date1ar2.len();
             let mut baddate1 = 0;
             for indl in 0..lendat2 {
-                 let date_int: i32 = date1ar2[indl].clone().parse().unwrap_or(-9999);
+                 let date_int: i32 = date1ar2[indl].parse().unwrap_or(-9999);
                  if date_int == -9999 {
                      baddate1 = 1;
                  } else {
@@ -223,10 +218,7 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
                      }
                  }
             }
-//                    println!("b tofilename: {}  ", tofilename);
             if baddate1 == 0 {
-//                     println!("c tofilename: {}  ", tofilename);
-
                 let datexx = Local.with_ymd_and_hms(dateyr, datemo, dateday,1,1,1);
                 if datexx == LocalResult::None {
                     baddate1 = 1;
@@ -244,8 +236,6 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
             }
 // date in name end
             if baddate1 == 0 {
-//                    println!("d tofilename: {}  ", tofilename);
-
                 dateto = Utc.with_ymd_and_hms(dateyr, datemo, dateday, datehr as u32, datemin as u32, datesec as u32);
                 let mut dateyro = 0;
                 let mut datemoo = 0;
@@ -254,15 +244,11 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
                 let mut datemino = 0;
                 let mut dateseco = 0;
                 if datenumother < 1000 {
-//                    let filelno = filenameother.len();
-//                    let fileendo = filelno - 1;
-//                    let filestarto = 1;
-//                    let filenamexo = filenameother.get(filestarto..fileendo).unwrap();
                     let filenamexo = filenameother.clone();
                     let date1ar2o: Vec<&str> = filenamexo[0..23].split("_").collect();
                     let lendat2o = date1ar2o.len();
                     for indlo in 0..lendat2o {
-                         let date_into: i32 = date1ar2o[indlo].clone().parse().unwrap_or(-9999);
+                         let date_into: i32 = date1ar2o[indlo].parse().unwrap_or(-9999);
                          if date_into == -9999 {
                              baddate1 = 1;
                          } else {
@@ -279,7 +265,6 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
                          }
                     }
                     if baddate1 == 0 {
-//                       println!("e tofilename: {}  ", tofilename);
                         let dateyy = Local.with_ymd_and_hms(dateyro, datemoo, datedayo,1,1,1);
                         if dateyy == LocalResult::None {
                             baddate1 = 1;
@@ -313,13 +298,11 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
 // phone date: extract date varing column start ie either yyyymmdd-hhmmss or img-yyyymmdd-hhmmss determine right location and can be inserted set datenumto dateto and bolusenum
 // displayed date: extract date from fromdisplaydate variable determine right location and can be inserted set datenumto dateto and bolusenum
         if bolok {
-//                    println!("f tofilename: {}  ", tofilename);
             let mut bolbefore = false;
             if strab == "before" {
                 bolbefore = true;
             }
             if struse == "gen" {
-//         	    println!("mgendate active");
                 let (errcodea, errstringa, bolusenumx, datenumtox, datetox) = gen_merge(datenumother, bolbefore, datenumto, dateto, dateother);
                 if errcodea == 0 {
                     bolusenum = bolusenumx;
@@ -331,7 +314,6 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
                     bolok = false;
                 }
             } else if struse == "din" {
-//         	    println!("mdateinname active");
                 let fromfilenamex = fromfilename.clone();
                 let (errcodea, errstringa, bolusenumx, datenumtox, datetox) = dateinname_merge(fromfilenamex, datenumother, bolbefore, datenumto, dateto, dateother);
                 if errcodea == 0 {
@@ -344,7 +326,6 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
                     bolok = false;
                 }
             } else if struse == "pdn" {
-//         	    println!("mcelldatename active");
                 let fromfilenamex = fromfilename.clone();
                 let (errcodea, errstringa, bolusenumx, datenumtox, datetox) = celldatename_merge(fromfilenamex, datenumother, bolbefore, datenumto, dateto, dateother);
                 if errcodea == 0 {
@@ -357,8 +338,6 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
                     bolok = false;
                 }
             } else if struse == "ddt" {
-//         	    println!("mdisplaydate active");
-//         	    println!("fromdisplaydate: {}", fromdisplaydate);
                 let dateyr = fromdisplaydate.get(0..4).unwrap().to_string();
                 let datemo = fromdisplaydate.get(5..7).unwrap().to_string();
                 let dateday = fromdisplaydate.get(8..10).unwrap().to_string();
@@ -383,7 +362,6 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
             }
         }
         if bolok {
-//                    println!("g tofilename: {}  ", tofilename);
             if !bolusenum {
                 let mut baddate2 = 0;
                 let datestr = format!("{}",dateto.unwrap().format("%Y:%m:%d:%T"));
@@ -396,7 +374,7 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
                 let mut datemind = 0;
                 let mut datesecd = 0;
                 for indld in 0..lendat2d {
-                     let date_intd: i32 = date1ar2d[indld].clone().parse().unwrap_or(-9999);
+                     let date_intd: i32 = date1ar2d[indld].parse().unwrap_or(-9999);
                      if date_intd == -9999 {
                          baddate2 = 1;
                      } else {
@@ -420,7 +398,6 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
                     errstring = format!("pick {:?},  num {:?}.  date {:?} good format", tofilename, datenumto, prefixstr);
                 }
             } else {
-//                    println!("h tofilename: {}  ", tofilename);
                 let datesubstr = &tofilename[0..19];
                 prefixstr = format!("{}_{:03}_", datesubstr, datenumto);
                 errstring = format!("pick {:?},  num {:?}.  date {:?} good format", tofilename, datenumto, prefixstr);
@@ -428,14 +405,10 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
         }
         if bolok {
 // determine file trailer length based on to file name.
-//                    println!("i tofilename: {}  ", tofilename);
-
             let fileln = tofilename.len();
-//            let fileend = fileln - 2;
             let datesubstr = &tofilename[24..fileln];
             let strlento = datesubstr.len();
             let filelnf = fromfilename.len();
-//            let fileendf = filelnf - 2;
             let mut datesubstrf: String = fromfilename[0..filelnf].to_owned();
             let strlenfrom = datesubstrf.len();
             if strlenfrom < strlento {
@@ -450,10 +423,6 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
             let re = Regex::new(r"[^A-Za-z0-9.]").unwrap();
             let after = re.replace_all(&datesubstrf, "_");
             let datesubstrfx = after.to_string();
-//            let filelnxx = fromfilename.len();
-//            let fileendxx = filelnxx - 2;
-//            let filestartxx = 6;
-//            let fromfilenamexx = fromfilename.get(filestartxx..fileendxx).unwrap();
             let msgstr = format!("copied {} to {}{}", fromfilename, prefixstr, datesubstrfx);            
             let fullfrom = str_cur_dirfrom + "/" + &fromfilename;
             if !Path::new(&fullfrom).exists() {

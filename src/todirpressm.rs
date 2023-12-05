@@ -1,12 +1,12 @@
-extern crate exif;
 extern crate chrono;
+use std::path::Path;
 use std::fs;
 use chrono::prelude::*;
 use chrono::offset::LocalResult;
-use iced::Color;
-use rfd::FileDialog;
+use native_dialog::FileDialog;
 
-pub fn todirpressm() -> (Color, String, String, Vec<String>) { 
+pub fn todirpressm(dirval: String) -> (u32, String, String, Vec<String>) { 
+     let errcode: u32;
      let errstring: String;
      let mut numentry = 0;
      let mut baddate1 = 0;
@@ -18,13 +18,19 @@ pub fn todirpressm() -> (Color, String, String, Vec<String>) {
      let mut datesec = 0;
      let mut datenum = 0;
      let mut listitems: Vec<String> = Vec::new();
-     let mut new_dir: String = " ".to_string();
-     let colorx : Color;
+     let mut new_dir: String;
+     if Path::new(&dirval).exists() {
+         new_dir = dirval.to_string();
+     } else {
+         new_dir = "/".to_string();
+     }
      let folder = FileDialog::new()
-                    .pick_folder();
+        .set_location(&new_dir)
+        .show_open_single_dir()
+        .unwrap();
      if folder == None {
          errstring = "error getting directory -- possible cancel key hit".to_string();
-         colorx = Color::from([1.0, 0.0, 0.0]);
+         errcode = 1;
      } else {
          new_dir = folder.as_ref().expect("REASON").display().to_string();
 // loop thru directory looking for jpg and png files
@@ -46,7 +52,7 @@ pub fn todirpressm() -> (Color, String, String, Vec<String>) {
                                       let date1ar2: Vec<&str> = file_name[0..23].split("_").collect();
                                       let lendat2 = date1ar2.len();
                                       for indl in 0..lendat2 {
-                                           let date_int: i32 = date1ar2[indl].clone().parse().unwrap_or(-9999);
+                                           let date_int: i32 = date1ar2[indl].parse().unwrap_or(-9999);
                                            if date_int == -9999 {
                                                baddate1 = 1;
                                            } else {
@@ -98,20 +104,20 @@ pub fn todirpressm() -> (Color, String, String, Vec<String>) {
          } 
 // end of for
          if baddate1 == 1 {
-             colorx = Color::from([1.0, 0.0, 0.0]);
+             errcode = 2;
              errstring = "********* ERROR File format is not correct **********".to_string();
          } else {
              if numentry > 0 {
 // sort the list then output to model
                  listitems.sort();
-                 colorx = Color::from([0.0, 1.0, 0.0]);
+                 errcode = 0;
                  errstring = format!("got directory");
              } else {
-                 colorx = Color::from([1.0, 0.0, 0.0]);
+                 errcode = 1;
                  errstring = "********* get_tomodel: directory has no images **********".to_string();
              }
          }
      }
-     (colorx, errstring, new_dir, listitems)
+     (errcode, errstring, new_dir, listitems)
 }
 

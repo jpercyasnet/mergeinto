@@ -14,16 +14,16 @@ pub fn get_winsize () -> (u32, String, u32, u32) {
                      .output()
                      .expect("failed to execute process");
     let output = String::from_utf8(output1.stdout).unwrap();
-    let locind = output.find(" current ");
+    let locind = output.find(" connected primary ");
     if locind != None {
-        let start = locind.unwrap() + 8;
+        let start = locind.unwrap() + 18;
         let end = start + 20;
         let getseg1 = output.get(start..end).expect("REASON").to_string();
-        let locx = getseg1.find(" x ");
+        let locx = getseg1.find("x");
         if locx != None {
             let end1 = locx.unwrap();
-            let start2 = end1 + 3;
-            let locy = getseg1.find(", ");
+            let start2 = end1 + 1;
+            let locy = getseg1.find("+");
             if locy != None {
                 let end2 = locy.unwrap();
                 let widths = getseg1.get(1..end1);
@@ -32,8 +32,8 @@ pub fn get_winsize () -> (u32, String, u32, u32) {
                 let heights_int: i32 = heights.unwrap().parse().unwrap_or(-99);
                 if widths_int > 20 {
                     if heights_int > 75 {
-                        widtho = widths_int as u32 - 20;
-                        heighto = heights_int as u32 - 75;
+                        widtho = widths_int as u32;
+                        heighto = heights_int as u32;
                         errstring = format!("screen size {} x {}", widtho, heighto);
                         errcode = 0;
                     } else {
@@ -45,7 +45,7 @@ pub fn get_winsize () -> (u32, String, u32, u32) {
                     errcode = 2;
                 }
             } else {
-                errstring = format!("Invalid segment- no comma {}", getseg1);
+                errstring = format!("Invalid segment- no + {}", getseg1);
                 errcode = 3;
             }
         } else {

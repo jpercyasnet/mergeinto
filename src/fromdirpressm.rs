@@ -1,16 +1,22 @@
-// extern crate chrono;
-// use iced::Color;
-use rfd::FileDialog;
+use native_dialog::FileDialog;
+use std::path::{Path};
 use crate::get_fromdirlistm;
-pub fn fromdirpressm (sizetxt: String) -> (i32, String, String, Vec<String>, i32, u32) {
+pub fn fromdirpressm (dirval: String, sizetxt: String) -> (u32, String, String, Vec<String>, i32, u32) {
      let errstring: String;
      let mut new_dirlist: Vec<String> = Vec::new();
      let mut shortto_int1 = 0;
      let mut icon_int1 = 0;
-     let mut new_dir: String = " ".to_string();
-     let mut errcode: i32 = 0;
+     let mut new_dir: String;
+     let errcode: u32;
+     if Path::new(&dirval).exists() {
+         new_dir = dirval.to_string();
+     } else {
+         new_dir = "/".to_string();
+     }
      let folder = FileDialog::new()
-                    .pick_folder();
+        .set_location(&new_dir)
+        .show_open_single_dir()
+        .unwrap();
      if folder == None {
          errstring = "error getting directory -- possible cancel key hit".to_string();
          errcode = 1;
@@ -36,6 +42,7 @@ pub fn fromdirpressm (sizetxt: String) -> (i32, String, String, Vec<String>, i32
                          icon_int1 = icon_int;
                          shortto_int1 = new_dirlist.len() as i32 ;
                          errstring = "got directory".to_string();
+                         errcode = 0;
                      }
                  } else if icon_int == -99 {
                      errstring = "********* List: Icon is not an integer **********".to_string();

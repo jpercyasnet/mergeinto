@@ -1,7 +1,7 @@
 extern crate chrono;
 use chrono::offset::LocalResult;
 use chrono::prelude::*;
-use chrono::{Utc};
+use chrono::Utc;
 // gen: datenumother, mbeforebox, datenumto--, bolusenum--, dateto--, dateother
 
 // function called by build_ui
@@ -35,7 +35,7 @@ pub fn dateinname_merge (fromfilename: String, datenumother: i32, mbeforebox_che
         let date1ar2: Vec<&str> = fromfilename[0..23].split("_").collect();
         let lendat2 = date1ar2.len();
         for indl in 0..lendat2 {
-             let date_int: i32 = date1ar2[indl].clone().parse().unwrap_or(-9999);
+             let date_int: i32 = date1ar2[indl].parse().unwrap_or(-9999);
              if date_int == -9999 {
                  baddate1 = 1;
              } else {
@@ -70,7 +70,7 @@ pub fn dateinname_merge (fromfilename: String, datenumother: i32, mbeforebox_che
     }
 // date in name end
     if baddate1 != 0 {
-        errstring = "<span color=\"#FF000000\">********* Merge: selected file name is does not have a valid date in name **********</span>".to_string();
+        errstring = "selected file name is does not have a valid date in name".to_string();
         errcode = 1
     } else {
         datefile = Utc.with_ymd_and_hms(dateyr, datemo, dateday, datehr as u32, datemin as u32, datesec as u32);
@@ -79,26 +79,26 @@ pub fn dateinname_merge (fromfilename: String, datenumother: i32, mbeforebox_che
             if mbeforebox_check {
                 if dateto == datefile {
                     if datenum <! datenumto {
-                        errstring = "<span color=\"#FF000000\">********* Merge: selected file number not less than place of insertion **********</span>".to_string();
+                        errstring = "selected file number not less than place of insertion".to_string();
                         errcode = 2;
                     }
                 } else {
                     let duration = dateto.unwrap().signed_duration_since(datefile.unwrap());
                     if duration.num_seconds() < 0 {
-                        errstring = "<span color=\"#FF000000\">********* Merge: selected file date not less than place of insertion **********</span>".to_string();
+                        errstring = "selected file date not less than place of insertion".to_string();
                         errcode = 3;
                     }
                 }
             } else {
                 if dateto == datefile {
                     if datenum >! datenumto {
-                        errstring = "<span color=\"#FF000000\">********* Merge: selected file number not greater than place of insertion **********</span>".to_string();
+                        errstring = "selected file number not greater than place of insertion".to_string();
                         errcode = 4;
                     }
                 } else {
                     let duration = datefile.unwrap().signed_duration_since(dateto.unwrap());
                     if duration.num_seconds() < 0 {
-                        errstring = "<span color=\"#FF000000\">********* Merge: selected file date not greater than place of insertion **********</span>".to_string();
+                        errstring = "selected file date not greater than place of insertion".to_string();
                         errcode = 5;
                     }
                 }
@@ -108,18 +108,18 @@ pub fn dateinname_merge (fromfilename: String, datenumother: i32, mbeforebox_che
             if mbeforebox_check {
                 if dateother == datefile {
                     if datenum >! datenumother {
-                        errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 5 **********</span>".to_string();
+                        errstring = "selected file date number will not go into place of insertion 5".to_string();
                         errcode = 5;
                     } else {
                         if dateto == datefile {
                             if datenum <! datenumto {
-                                errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 6 **********</span>".to_string();
+                                errstring = "selected file date number will not go into place of insertion 6".to_string();
                                 errcode = 6;
                             }
                         } else {
                             let duration = dateto.unwrap().signed_duration_since(datefile.unwrap());
                             if duration.num_seconds() < 0 {
-                                errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 7 **********</span>".to_string();
+                                errstring = "selected file date number will not go into place of insertion 7".to_string();
                                 errcode = 7;
                             }
                         }
@@ -127,18 +127,18 @@ pub fn dateinname_merge (fromfilename: String, datenumother: i32, mbeforebox_che
                 } else {
                     let duration = datefile.unwrap().signed_duration_since(dateother.unwrap());
                     if duration.num_seconds() < 0 {
-                       errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 8 **********</span>".to_string();
+                       errstring = "selected file date number will not go into place of insertion 8".to_string();
                        errcode = 8;
                     } else {
                         if dateto == datefile {
                             if datenum <! datenumto {
-                                errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 9 **********</span>".to_string();
+                                errstring = "selected file date number will not go into place of insertion 9".to_string();
                                 errcode = 9;
                             }
                         } else {
                             let duration = dateto.unwrap().signed_duration_since(datefile.unwrap());
                             if duration.num_seconds() < 0 {
-                                errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 10 **********</span>".to_string();
+                                errstring = "selected file date number will not go into place of insertion 10".to_string();
                                 errcode = 10;
                             }
                         }
@@ -147,18 +147,18 @@ pub fn dateinname_merge (fromfilename: String, datenumother: i32, mbeforebox_che
             } else {
                 if dateto == datefile {
                     if datenum >! datenumto {
-                        errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 11 **********</span>".to_string();
+                        errstring = "selected file date number will not go into place of insertion 11".to_string();
                         errcode = 11;
                     } else {
                         if dateother == datefile {
                             if datenum <! datenumother {
-                                errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 12 **********</span>".to_string();
+                                errstring = "selected file date number will not go into place of insertion 12".to_string();
                                 errcode = 12;
                             }
                         } else {
                             let duration = dateother.unwrap().signed_duration_since(datefile.unwrap());
                             if duration.num_seconds() < 0 {
-                                errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 13 **********</span>".to_string();
+                                errstring = "selected file date number will not go into place of insertion 13".to_string();
                                 errcode = 13;
                             }
                         }
@@ -166,18 +166,18 @@ pub fn dateinname_merge (fromfilename: String, datenumother: i32, mbeforebox_che
                 } else {
                     let duration = datefile.unwrap().signed_duration_since(dateto.unwrap());
                     if duration.num_seconds() < 0 {
-                       errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 14 **********</span>".to_string();
+                       errstring = "selected file date number will not go into place of insertion 14".to_string();
                        errcode = 14;
                     } else {
                         if dateother == datefile {
                             if datenum <! datenumother {
-                                errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 15 **********</span>".to_string();
+                                errstring = "selected file date number will not go into place of insertion 15".to_string();
                                 errcode = 15;
                             }
                         } else {
                             let duration = dateother.unwrap().signed_duration_since(datefile.unwrap());
                             if duration.num_seconds() < 0 {
-                                errstring = "<span color=\"#FF000000\">********* Merge: selected file date number will not go into place of insertion 16 **********</span>".to_string();
+                                errstring = "selected file date number will not go into place of insertion 16".to_string();
                                 errcode = 16;
                             }
                         }

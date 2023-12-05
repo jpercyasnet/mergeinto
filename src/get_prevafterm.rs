@@ -32,11 +32,11 @@ pub fn get_prevafterm(cur_dir: String, tofilename: String) -> (u32, String, Stri
          }
     }
     if baddate1 == 1 {
-        errstring = "<span color=\"#FF000000\">********* Preview: ERROR directory does not conform **********</span>".to_string();
+        errstring = "Preview: ERROR directory does not conform".to_string();
         errcode = 1;
     } else {
         if numentry < 1 {
-            errstring = "<span color=\"#FF000000\">********* Preview: directory has no images **********</span>".to_string();
+            errstring = "Preview: directory has no images ".to_string();
             errcode = 2;
         } else {
             listitems.sort();
@@ -81,7 +81,7 @@ pub fn get_prevafterm(cur_dir: String, tofilename: String) -> (u32, String, Stri
                 }
             }
             if found == 0 {
-                errstring = "<span color=\"#FF000000\">********* Preview: file not found in directory **********</span>".to_string();
+                errstring = "Preview: file not found in directory".to_string();
                 errcode = 3;
             }
         }

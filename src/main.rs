@@ -1,5 +1,5 @@
 use iced::alignment::{self, Alignment};
-use iced::widget::scrollable::{Properties};
+use iced::widget::scrollable::Properties;
 use iced::theme::{self, Theme};
 use iced::widget::{
     button, checkbox, column, row, scrollable, text, horizontal_space,
@@ -38,8 +38,8 @@ pub fn main() -> iced::Result {
      let mut heightxx: u32 = 750;
      let (errcode, errstring, widtho, heighto) = get_winsize();
      if errcode == 0 {
-         widthxx = widtho;
-         heightxx = heighto;
+         widthxx = widtho - 20;
+         heightxx = heighto - 75;
          println!("{}", errstring);
      } else {
          println!("**ERROR {} get_winsize: {}", errcode, errstring);
@@ -125,6 +125,7 @@ struct State {
     afterrgb: Vec<u8>,
     afterwidth: u32,
     afterheight: u32,
+    screenwidth: f32,
 }
 
 #[derive(Debug, Clone)]
@@ -150,6 +151,14 @@ impl Application for ImageList {
     type Flags = ();
 
     fn new(_flags: ()) -> (ImageList, Command<Message>) {
+        let mut widthxx: u32 = 1300;
+        let (errcode, errstring, widtho, _heighto) = get_winsize();
+        if errcode == 0 {
+            widthxx = widtho;
+            println!("{}", errstring);
+        } else {
+         println!("**ERROR {} get_winsize: {}", errcode, errstring);
+        }
 
         (
             ImageList::Loaded(State
@@ -178,6 +187,7 @@ impl Application for ImageList {
                 afterrgb: Vec::<u8>::new(),
                 afterwidth: 0,
                 afterheight: 0,
+                screenwidth: widthxx as f32,
                 }
             ),
             Command::none(),
@@ -185,7 +195,7 @@ impl Application for ImageList {
     }
 
     fn title(&self) -> String {
-        format!("Individual Rotation -- iced")
+        format!("Merge images into a directory -- iced")
     }
 
     fn update(&mut self, message: Message) -> Command<Message> {
@@ -224,7 +234,7 @@ impl Application for ImageList {
                         }
                     }
                     Message::FromDirPressed => {
-                       let (errcode, errstr, newdir, listitems, newtoi, icon_int1) = fromdirpressm(state.size_value.clone());
+                       let (errcode, errstr, newdir, listitems, newtoi, icon_int1) = fromdirpressm(state.fromdir_value.clone(), state.size_value.clone());
                        if errcode == 0 {
                            if newtoi != 0 {
                                state.images.clear();                         
@@ -232,9 +242,8 @@ impl Application for ImageList {
                                     state.fromdir_value = newdir.to_string();
                                     let linestr = listitems[indexi as usize].clone();
                                     let lineparse: Vec<&str> = linestr[0..].split(" | ").collect();
-                                    let filefromx = lineparse[0].clone().to_string();
+                                    let filefromx = lineparse[0].to_string();
                                     let fullpath = state.fromdir_value.clone() + "/" + &filefromx;
-                                    println!("fullpath -{}- ", fullpath);
                                     let newwidth: u32;
                                     let newheight: u32;
                                     if let Ok((iwidth, iheight)) = create_image::image_dimensions(fullpath.clone()) {
@@ -267,8 +276,9 @@ impl Application for ImageList {
                        Command::none()
                     } 
                     Message::ToDirPressed => {
-                        let (colorout, errstr, newdir, listitems) = todirpressm();
-                        if errstr == "got directory" {
+                        let (errcode, errstr, newdir, listitems) = todirpressm(state.fromdir_value.clone());
+                        state.msg_value = errstr.to_string();
+                        if errcode == 0 {
                             state.files.clear();                         
                             state.todir_value = newdir.to_string();
                             let listitemlen = listitems.len();
@@ -278,9 +288,10 @@ impl Application for ImageList {
                                     .files
                                     .push(File::new(listitems[indexi as usize].clone()));
                             } 
+                            state.mess_color = Color::from([0.0, 1.0, 0.0]);
+                        } else {
+                            state.mess_color = Color::from([1.0, 0.0, 0.0]);
                         }
-                        state.msg_value = errstr.to_string();
-                        state.mess_color = colorout;
                         Command::none()
                     } 
                     Message::PreviewPressed => {
@@ -448,9 +459,6 @@ impl Application for ImageList {
                                let strab = match state.abchoice_value {
                                                ABChoice::After => "after".to_string(),
                                                ABChoice::Before => "before".to_string()};
-                               
-                               state.msg_value = format!("got FROM {} and TO {}", fromimagestr, toimagestr);
-                               state.mess_color = Color::from([0.0, 1.0, 0.0]);
                                let (errcode, errstr) = mergepressm(fromimagestr, toimagestr, state.fromdir_value.clone(),
                                                                 state.todir_value.clone(), struse, strdt, strab);
                                if errcode == 0 {
@@ -465,6 +473,7 @@ impl Application for ImageList {
                                               .push(File::new(listitems[indexi as usize].clone()));
                                        } 
                                        state.mess_color = Color::from([0.0, 1.0, 0.0]);
+                                       state.msg_value = errstr.to_string();
                                    } else {
                                        state.msg_value = errstra.to_string();
                                        state.mess_color = Color::from([1.0, 0.0, 0.0]);
@@ -540,14 +549,9 @@ impl Application for ImageList {
                 afterrgb,
                 afterwidth,
                 afterheight,
+                screenwidth,
                 ..
             }) => {
-                let title = text("Merge picture into directory")
-                    .width(Length::Fill)
-                    .size(20)
-                    .style(Color::from([0.5, 0.5, 0.5]))
-                    .horizontal_alignment(alignment::Horizontal::Center);
-
                 let mut messcol = Column::new().spacing(10);
                 messcol = messcol.push(container(row![text("Message:").size(20),
                  text(msg_value).size(20).style(*mess_color),
@@ -555,27 +559,26 @@ impl Application for ImageList {
                     ));
 
                 let mut dirbutshow = Column::new().spacing(10);
-                dirbutshow = dirbutshow.push(container(row![button("From Directory Button")
+                 dirbutshow = dirbutshow.push(container(row![button("From Directory Button")
                                                              .on_press(Message::FromDirPressed)
                                                              .style(theme::Button::Secondary),
                                                             text(fromdir_value)
                                                              .size(20),
-                                                           ].align_items(Alignment::Center).spacing(100).padding(1),
-                 ));
-                dirbutshow = dirbutshow.push(container(row![button("To Directory Button")
+                                                             horizontal_space(Length::Fixed(50.0)),
+                                                             button("To Directory Button")
                                                              .on_press(Message::ToDirPressed)
                                                              .style(theme::Button::Secondary),
                                                             text(todir_value)
                                                              .size(20),
-                                                           ].align_items(Alignment::Center).spacing(100).padding(1),
-                 ).align_x(alignment::Horizontal::Right).width(Length::Fill));
-
+                                                           ].align_items(Alignment::Center).spacing(10).padding(1),
+                 ));
                 let controls = view_controls(images, *filter);
                 let filtered_images =
                     images.iter().filter(|imageitem| filter.matches(imageitem));
 
                 let mut imagescol1 = Column::new().spacing(10);
                 let mut imagescol2 = Column::new().spacing(10);
+                let mut imagescol3 = Column::new().spacing(10);
                 let mut colpos = 0;
                 let mut n = 0;
                 if filtered_images.clone().count() == 0 {
@@ -598,9 +601,14 @@ impl Application for ImageList {
                                  imagescol2 = imagescol2.push(container(row![imagesy.view(n).map(move |message| {
                                     Message::ImageMessage(n, message)
                                    })]));
+                                 colpos = 2;
+                               } else if colpos == 2 {
+                                 imagescol3 = imagescol3.push(container(row![imagesy.view(n).map(move |message| {
+                                    Message::ImageMessage(n, message)
+                                   })]));
                                  colpos = 0;
                                }
-                             }
+                            }
                          } else {
                              if (filter == &Filter::All) || (filter == &Filter::Active) {
                                if colpos == 0 {
@@ -612,17 +620,25 @@ impl Application for ImageList {
                                  imagescol2 = imagescol2.push(container(row![imagesy.view(n).map(move |message| {
                                     Message::ImageMessage(n, message)
                                    })]));
+                                 colpos = 2;
+                               } else if colpos == 2 {
+                                 imagescol3 = imagescol3.push(container(row![imagesy.view(n).map(move |message| {
+                                    Message::ImageMessage(n, message)
+                                   })]));
                                  colpos = 0;
-                               }
-                             }
+                              }
+                           }
                          }
                          n = n + 1;
                     }
                 }
                 let mut imagesrow = Row::new().spacing(20);
-                imagesrow = imagesrow.push(container(imagescol1).padding(10).width(Length::Fixed(250.0)));
+                imagesrow = imagesrow.push(container(imagescol1).padding(10).width(Length::Fixed(300.0)));
                 if n > 1 {
-                    imagesrow = imagesrow.push(container(imagescol2).padding(10).width(Length::Fixed(250.0)));
+                    imagesrow = imagesrow.push(container(imagescol2).padding(10).width(Length::Fixed(300.0)));
+                }
+                if n > 2 {
+                    imagesrow = imagesrow.push(container(imagescol3).padding(10).width(Length::Fixed(300.0)));
                 }
 
                 let scrollable_content: Element<Message> =
@@ -630,12 +646,17 @@ impl Application for ImageList {
                     imagesrow
                 )
                 .height(Length::Fill)
-                .width(Length::Fixed(600.0))
-                .horizontal_scroll(
-                    Properties::new()
+                .width(Length::Fixed(1000.0))
+                .direction(scrollable::Direction::Both {
+                    horizontal: Properties::new()
                         .width(10)
-                        .margin(10)
+                        .margin(0)
                         .scroller_width(10),
+                    vertical: Properties::new()
+                        .width(10)
+                        .margin(0)
+                        .scroller_width(10),
+                   }
                 )); 
 
                 let controlsf = view_controlsf(files, *filterf);
@@ -677,12 +698,17 @@ impl Application for ImageList {
                 )
                 .height(Length::Fill)
                 .width(Length::Fixed(500.0))
-               .horizontal_scroll(
-                    Properties::new()
+                .direction(scrollable::Direction::Both {
+                    horizontal: Properties::new()
                         .width(10)
-                        .margin(10)
+                        .margin(0)
                         .scroller_width(10),
-                )); 
+                    vertical: Properties::new()
+                        .width(10)
+                        .margin(0)
+                        .scroller_width(10),
+                   }
+               )); 
 
                 let selected_usechoice = Some(usechoice_value);
                 let ua = Radio::new(
@@ -712,7 +738,8 @@ impl Application for ImageList {
                            Message::UseRadioSelected
                 ).size(15);
            
-                let contentuse = row![ua, ub, uc, ud, button("Preview Images").on_press(Message::PreviewPressed),].spacing(80).padding(1);
+                let contentuse = row![ua, ub, uc, ud, horizontal_space(Length::Fill), 
+                                                        button("Preview Images").on_press(Message::PreviewPressed),].spacing(80).padding(1);
 
                 let selected_dtchoice = Some(dtchoice_value);
                 let da = Radio::new(
@@ -751,10 +778,12 @@ impl Application for ImageList {
                          selected_abchoice.copied(),
                          Message::ABRadioSelected,
                 ).size(15);
-                let contentab = row![button("Merge").on_press(Message::MergePressed), aa, ab, text("             Icon Size: ").size(20), text_input("140", size_value).on_input(Message::SizeChanged).padding(10).size(20),].spacing(80).padding(1);
+                let contentab = row![button("Merge").on_press(Message::MergePressed), aa, ab, text("             Icon Size: ").size(20), 
+                                                       text_input("140", size_value).on_input(Message::SizeChanged).padding(10).size(20),].spacing(80).padding(1);
 
-                let titlefromto = row![horizontal_space(50), text("********* FROM *********"),horizontal_space(350),text("********* TO *********"),].spacing(80).padding(5);
+                let titlefromto = row![horizontal_space(50), text("********* FROM *********"),horizontal_space(550),text("********* TO *********"),].spacing(80).padding(5);
 
+                let winwidth: f32 = screenwidth - 20.0;
 
                 if *prevexist || *currexist || *afterexist {
                     let mut previewcol = Column::new().spacing(20);
@@ -770,18 +799,31 @@ impl Application for ImageList {
                         let afterimage = image::Handle::from_pixels(afterwidth.clone(), afterheight.clone(), afterrgb.clone()); 
                         previewcol =  previewcol.push(container(image::Viewer::new(afterimage).height(Length::Fixed(300.0))));
                     }
-                    column![title, messcol, dirbutshow, contentuse, contentdt, contentab, titlefromto, row![controls, horizontal_space(400), controlsf], row![scrollable_content, scrollable_contentf, previewcol].spacing(5)]
+                    column![messcol, dirbutshow, contentuse, contentdt, contentab, titlefromto, row![controls, horizontal_space(400), controlsf], row![scrollable_content, scrollable_contentf, previewcol].spacing(5)]
                          .spacing(5)
-                         .max_width(1300)
+                         .max_width(winwidth)
+                         .padding(10)
                          .into()
                 } else {
-                   column![title, messcol, dirbutshow, contentuse, contentdt, contentab, titlefromto, row![controls, horizontal_space(400), controlsf], row![scrollable_content, scrollable_contentf]]
+                   column![messcol, dirbutshow, contentuse, contentdt, contentab, titlefromto, row![controls, horizontal_space(600), controlsf], row![scrollable_content, scrollable_contentf]]
                          .spacing(1)
-                         .max_width(1300)
+                         .max_width(winwidth)
+                         .padding(10)
                          .into()
                 }
             }
         }
+    }
+    fn theme(&self) -> Theme {
+         Theme::Dark
+/*          Theme::custom(theme::Palette {
+                        background: Color::from_rgb8(240, 240, 240),
+                        text: Color::BLACK,
+                        primary: Color::from_rgb8(230, 230, 230),
+                        success: Color::from_rgb(0.0, 1.0, 0.0),
+                        danger: Color::from_rgb(1.0, 0.0, 0.0),
+                    })
+ */              
     }
 }
 
@@ -825,20 +867,27 @@ impl ImageItem {
             self.completed,
             ImageMessage::Completed,
         )
-        .width(Length::Fill).text_size(15);
+        .width(Length::Fill).text_size(12);
         let newimage = image::Handle::from_pixels(self.twidth.clone(), self.theight.clone(), self.rgbconv.clone()); 
-
+        let colhigh: f32;
+        if self.twidth > self.theight {
+            colhigh = self.twidth as f32 + 50.0;
+        } else {
+            colhigh = self.theight as f32 + 50.0;
+        }
         column![
            container(
         // This should go away once we unify resource loading on native
         // platforms
              image::Viewer::new(newimage)
-                 .height(Length::Fixed(300.0)),
+                 .height(Length::Fill)
+                 .width(Length::Fill),
            )
            .width(Length::Fill),
             checkbox,
         ]
         .align_items(Alignment::Center)
+        .height(Length::Fixed(colhigh))
         .spacing(5)
         .into()
 

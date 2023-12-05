@@ -1,9 +1,7 @@
-// extern crate exif;
+extern crate exif;
 use std::fs;
 use exif::{Reader, In, Tag};
 use chrono::prelude::*;
-// use chrono::offset::LocalResult;
-// use chrono::{Duration, Utc};
 use std::fs::File;
 use crate::dump_file::dump_file;
 use std::path::{PathBuf};
@@ -11,12 +9,11 @@ use std::io::BufReader;
 
 //  Use to get list of sorted files in the directory list in vector format
 // input is the directory and output is error number, error string and model
-pub fn get_fromdirlistm (current_dir: PathBuf) -> (i32, String, Vec<String>) {
-    let errcode: i32;
+pub fn get_fromdirlistm (current_dir: PathBuf) -> (u32, String, Vec<String>) {
+    let errcode: u32;
     let errstring: String;
     let mut listitems: Vec<String> = Vec::new();
     let mut numentry = 0;
-//    let mut listname: Vec<String> = Vec::new();
     for entry1 in fs::read_dir(&current_dir).unwrap() {
          let entry = entry1.unwrap();
          if let Ok(metadata) = entry.metadata() {
