@@ -3,7 +3,7 @@ use std::path::Path;
 use std::fs;
 use chrono::prelude::*;
 use chrono::offset::LocalResult;
-use native_dialog::FileDialog;
+use rfd::FileDialog;
 
 pub fn todirpressm(dirval: String) -> (u32, String, String, Vec<String>) { 
      let errcode: u32;
@@ -25,9 +25,11 @@ pub fn todirpressm(dirval: String) -> (u32, String, String, Vec<String>) {
          new_dir = "/".to_string();
      }
      let folder = FileDialog::new()
-        .set_location(&new_dir)
-        .show_open_single_dir()
-        .unwrap();
+//        .set_location(&new_dir)
+//        .show_open_single_dir()
+//        .unwrap();
+         .set_directory(&new_dir)
+         .pick_folder();
      if folder == None {
          errstring = "error getting directory -- possible cancel key hit".to_string();
          errcode = 1;

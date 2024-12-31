@@ -1,16 +1,15 @@
 [package]
-name = "mergeinto02"
+name = "mergeintoc1310"
 version = "0.1.0"
-authors = ["Héctor Ramón Jiménez <hector0193@gmail.com>"]
+authors = ["jp <jpercyasnet@yahoo.com>"]
 edition = "2021"
 publish = false
 
 [dependencies]
+iced = { version = "^0", features = ["async-std", "image", "debug"] }
 kamadak-exif = "^0"
 regex = "^0"
-iced = { version = "^0", features = ["async-std", "image", "debug"] }
 serde = { version = "^0", features = ["derive"] }
-# serde = { version = "1.0", features = ["derive"] }
-native-dialog = "^0"
+rfd = { version = "^0", features = ["xdg-portal"] }
 chrono = "^0"
 image = "^0"

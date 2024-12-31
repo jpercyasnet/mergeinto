@@ -30,7 +30,7 @@ pub fn celldatename_merge (fromfilename: String, datenumother: i32, mbeforebox_c
     let mut baddate1 = 0;
     let mut yyyymmddx: String = " ".to_string();
     let mut hhmmssx: String = " ".to_string();
-    println!("cell: fromfilename: {}", fromfilename);
+//    println!("cell: fromfilename: {}", fromfilename);
     if fromfilename.len() < 15 {
         baddate1 = 1;
     } else {

@@ -37,13 +37,13 @@ use get_prevafterm::get_prevafterm;
 pub fn main() -> iced::Result {
      let mut widthxx: f32 = 1350.0;
      let mut heightxx: f32 = 750.0;
-     let (errcode, _errstring, widtho, heighto) = get_winsize();
+     let (errcode, errstring, widtho, heighto) = get_winsize();
      if errcode == 0 {
          widthxx = widtho as f32 - 20.0;
          heightxx = heighto as f32 - 75.0;
-//         println!("{}", errstring);
-//     } else {
-//         println!("**ERROR {} get_winsize: {}", errcode, errstring);
+         println!("{}", errstring);
+     } else {
+         println!("**ERROR {} get_winsize: {}", errcode, errstring);
      }
      iced::application(ImageList::title, ImageList::update, ImageList::view)
         .window_size((widthxx, heightxx))
@@ -149,12 +149,11 @@ impl ImageList {
     fn new() -> (Self, Task<Message>) {
         let mut widthxx: u32 = 1300;
         let (errcode, errstring, widtho, _heighto) = get_winsize();
-        let for_message: String;
         if errcode == 0 {
             widthxx = widtho;
-            for_message = format!("{}", errstring);
+            println!("{}", errstring);
         } else {
-            for_message = format!("**ERROR {} get_winsize: {}", errcode, errstring);
+         println!("**ERROR {} get_winsize: {}", errcode, errstring);
         }
 
         (
@@ -165,9 +164,9 @@ impl ImageList {
                 images:Vec::<ImageItem>::new(),
                 files:Vec::<File>::new(),
                 fromdir_value: "no directory".to_string(),
-                todir_value: "no directory".to_string(),
-                mess_color: Color::from([0.5, 0.5, 1.0]),
-                msg_value: for_message.to_string(),
+                todir_value: "no directory                                                             ".to_string(),
+                mess_color: Color::from([0.0, 0.0, 1.0]),
+                msg_value: "no message".to_string(),
                 size_value: "140".to_string(),
                 usechoice_value:UseChoice::GEN,
                 dtchoice_value:DtChoice::DT,
@@ -331,7 +330,7 @@ impl ImageList {
                                             state.mess_color = Color::from([1.0, 0.0, 0.0]);
                                         } else {
                                             let fullpathc = state.todir_value.clone() + "/" + &toimagestr.clone();
-//                                            println!("fullpathc -{}- ", fullpathc);
+                                            println!("fullpathc -{}- ", fullpathc);
                                             let mut newwidth: u32;
                                             let mut newheight: u32;
                                             if let Ok((iwidth, iheight)) = create_image::image_dimensions(fullpathc.clone()) {
@@ -351,7 +350,7 @@ impl ImageList {
                                                 let mut errset = 0;
                                                 if namepo != " " {
                                                     let fullpathp = state.todir_value.clone() + "/" + &namepo;
-//                                                    println!("fullpathp -{}- ", fullpathp);
+                                                    println!("fullpathp -{}- ", fullpathp);
                                                     if let Ok((iwidthp, iheightp)) = create_image::image_dimensions(fullpathp.clone()) {
                                                         if iwidthp > iheightp {
                                                             newwidth = icon_int.clone() as u32;
@@ -376,7 +375,7 @@ impl ImageList {
                                                 } 
                                                 if nameao != " " {
                                                     let fullpatha = state.todir_value.clone() + "/" + &nameao;
-//                                                    println!("fullpatha -{}- ", fullpatha);
+                                                    println!("fullpatha -{}- ", fullpatha);
                                                     if let Ok((iwidtha, iheighta)) = create_image::image_dimensions(fullpatha.clone()) {
                                                         if iwidtha > iheighta {
                                                             newwidth = icon_int.clone() as u32;
@@ -562,19 +561,19 @@ impl ImageList {
                     ));
 
                 let mut dirbutshow = Column::new().spacing(10);
-                let dirspace = 5.0;
-//                if fromdir_value.len()*8 < 600 {
-//                    dirspace = 600.0 - 8.0*fromdir_value.len() as f32;
-//                }
-                dirbutshow = dirbutshow.push(container(row![container(row![button("From Directory Button")
+                let mut dirspace = 5.0;
+                if fromdir_value.len()*8 < 600 {
+                    dirspace = 600.0 - 8.0*fromdir_value.len() as f32;
+                }
+                dirbutshow = dirbutshow.push(container(row![button("From Directory Button")
                                                              .on_press(Message::FromDirPressed),
                                                             text(fromdir_value)
-                                                             .size(20)].spacing(10)).width(Length::Fill),
+                                                             .size(20),
                                                              Space::with_width(Length::Fixed(dirspace)),
-                                                             container(row![button("To Directory Button")
+                                                             button("To Directory Button")
                                                              .on_press(Message::ToDirPressed),
                                                             text(todir_value)
-                                                             .size(20)].spacing(10)).width(Length::Fill),
+                                                             .size(20),
                                                            ].align_y(Alignment::Center).spacing(10).padding(1),
                  ));
                 let controls = view_controls(images, *filter);
@@ -786,47 +785,34 @@ impl ImageList {
                          selected_abchoice.copied(),
                          Message::ABRadioSelected,
                 ).size(15);
-                let contentab = row![button("Merge").on_press(Message::MergePressed), aa, ab, horizontal_space(), text(" Icon Size: ").size(20), 
-                                                       text_input("140", size_value).on_input(Message::SizeChanged).padding(10).size(20).width(80),].spacing(80).padding(1);
+                let contentab = row![button("Merge").on_press(Message::MergePressed), aa, ab, text("             Icon Size: ").size(20), 
+                                                       text_input("140", size_value).on_input(Message::SizeChanged).padding(10).size(20),].spacing(80).padding(1);
 
-//                let titlefromto = row![Space::with_width(Length::Fixed(50.0)), text("********* FROM *********"),Space::with_width(Length::Fixed(550.0)),text("********* TO *********"),].spacing(80).padding(5);
+                let titlefromto = row![Space::with_width(Length::Fixed(50.0)), text("********* FROM *********"),Space::with_width(Length::Fixed(550.0)),text("********* TO *********"),].spacing(80).padding(5);
 
                 let winwidth: f32 = screenwidth - 20.0;
-
-
-                let columnfrom = column![text("********* FROM *********"), controls, scrollable_content].width(Length::Fill);
-
 
                 if *prevexist || *currexist || *afterexist {
                     let mut previewcol = Column::new().spacing(20);
                     if *prevexist {
                         let previmage = image::Handle::from_rgba(prevwidth.clone(), prevheight.clone(), prevrgb.clone()); 
-                        let newph = *prevheight as f32 + 20.0;
-                        previewcol =  previewcol.push(container(image::Viewer::new(previmage).height(Length::Fixed(newph))));
+                        previewcol =  previewcol.push(container(image::Viewer::new(previmage).height(Length::Fixed(300.0))));
                     }
                     if *currexist {
                         let currimage = image::Handle::from_rgba(currwidth.clone(), currheight.clone(), currrgb.clone()); 
-                        let newch = *currheight as f32 + 20.0;
-                        previewcol =  previewcol.push(container(image::Viewer::new(currimage).height(Length::Fixed(newch))));
+                        previewcol =  previewcol.push(container(image::Viewer::new(currimage).height(Length::Fixed(300.0))));
                     }
                     if *afterexist {
                         let afterimage = image::Handle::from_rgba(afterwidth.clone(), afterheight.clone(), afterrgb.clone()); 
-                        let newah = *afterheight as f32 + 20.0;
-                        previewcol =  previewcol.push(container(image::Viewer::new(afterimage).height(Length::Fixed(newah))));
+                        previewcol =  previewcol.push(container(image::Viewer::new(afterimage).height(Length::Fixed(300.0))));
                     }
-                    let columntoa = column![text("********* TO *********"), controlsf, row![scrollable_contentf, previewcol]].width(Length::Fill);
-//                    column![messcol, dirbutshow, contentuse, contentdt, contentab, titlefromto, row![controls, Space::with_width(Length::Fixed(400.0)), controlsf], row![scrollable_content, scrollable_contentf, previewcol].spacing(5)]
-                    column![messcol, dirbutshow, contentuse, contentdt, contentab, row![columnfrom, columntoa]]
+                    column![messcol, dirbutshow, contentuse, contentdt, contentab, titlefromto, row![controls, Space::with_width(Length::Fixed(400.0)), controlsf], row![scrollable_content, scrollable_contentf, previewcol].spacing(5)]
                          .spacing(5)
                          .max_width(winwidth)
                          .padding(10)
                          .into()
                 } else {
-                   let columntob = column![text("********* TO *********"), controlsf, scrollable_contentf].width(Length::Fill);
-
-
-//                   column![messcol, dirbutshow, contentuse, contentdt, contentab, titlefromto, row![controls, Space::with_width(Length::Fixed(600.0)), controlsf], row![scrollable_content, scrollable_contentf]]
-                   column![messcol, dirbutshow, contentuse, contentdt, contentab, row![columnfrom, columntob]]
+                   column![messcol, dirbutshow, contentuse, contentdt, contentab, titlefromto, row![controls, Space::with_width(Length::Fixed(600.0)), controlsf], row![scrollable_content, scrollable_contentf]]
                          .spacing(1)
                          .max_width(winwidth)
                          .padding(10)
@@ -976,8 +962,7 @@ fn view_controlsf(files: &[File], current_filter: Filterf) -> Element<Message> {
         button.on_press(Message::FilterChangedf(filterf)).padding(8)
     };
 
-        row![Space::with_width(Length::Fixed(20.0)),
-            text(format!(
+        row![        text(format!(
             "{} {} selected",
             files_left,
             if files_left == 1 { "file" } else { "files" }

@@ -62,8 +62,8 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
             fromfilename = lineparse[0].to_string();
             let fromdisplaydatea = lineparse[1].to_string();
             fromdisplaydate = fromdisplaydatea[3..].to_string();
-                println!("fromfilename: -{}-", fromfilename);
-                println!("fromdisplayname: -{}-", fromdisplaydate);
+//                println!("fromfilename: -{}-", fromfilename);
+//                println!("fromdisplayname: -{}-", fromdisplaydate);
             let fullfrom = str_cur_dirfrom.clone() + "/" + &fromfilename.clone();
             if !Path::new(&fullfrom).exists() {
                 errstring = format!("*********  ERROR from file {} does not exist **********",fullfrom);
@@ -71,7 +71,7 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
                 bolok = false;
             } else {
                 tofilename = tostr;
-                println!("tofilename: -{}-", tofilename);
+//                println!("tofilename: -{}-", tofilename);
                let fullto= str_cur_dirto.clone() + "/" + &tofilename.clone();
                if !Path::new(&fullto).exists() {
                     errstring = format!("********* ERROR to file {} does not exist **********",fullto);
@@ -189,7 +189,7 @@ pub fn mergepressm (fromstr: String, tostr: String, fromdir: String, todir: Stri
                         }
                     }
                     errstring = format!("pick {:?} - {:?} ,  other {:?} - {:?} found", tofilenamex, datenumto, filenameother, datenumother);
-                    println!("a tofilename: {}  filenameother: {}", tofilename, filenameother);
+//                    println!("a tofilename: {}  filenameother: {}", tofilename, filenameother);
                 }
             }
         }
